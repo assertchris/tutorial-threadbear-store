@@ -1,4 +1,4 @@
-'use strict'
+"use strict"
 
 /*
 |--------------------------------------------------------------------------
@@ -13,28 +13,14 @@
 |
 */
 
-const Route = use('Route')
+const Route = use("Route")
 
-Route.get('/', ({ request }) => {
-  return `
-  <html>
-    <head>
-      <link rel="stylesheet" href="/style.css" />
-    </head>
-    <body>
-      <section>
-        <div class="logo"></div>
-        <div class="title"></div>
-        <div class="subtitle"><p>AdonisJs simplicity will make you feel confident about your code</p></div>
-      </section>
-    </body>
-  </html>
-  `
+Route.get("/", ({ view }) => {
+    return view.render("page/home")
 })
 
-Route.get("/login", () => {
-    // show login form
-    return "GET /login"
+Route.get("/login", ({ view }) => {
+    return view.render("user/login")
 })
 
 Route.post("/login", () => {
@@ -47,9 +33,8 @@ Route.put("/logout", () => {
     return "PUT /logout"
 })
 
-Route.get("/register", () => {
-    // show registration form
-    return "GET /register"
+Route.get("/register", ({ view }) => {
+    return view.render("user/register")
 })
 
 Route.post("/register", () => {
@@ -77,10 +62,11 @@ Route.post("/reset-password/:token", ({ params }) => {
     return "POST /reset-password " + params.token
 })
 
-Route.get("/:customer", ({ params }) => {
-    // show customer profile
-    return "GET /:customer " + params.customer
-})
+Route.get("/:customer", ({ view, params }) =>
+    view.render("user/profile", {
+        name: params.customer,
+    })
+)
 
 Route.put("/:customer", ({ params }) => {
     // update customer profile

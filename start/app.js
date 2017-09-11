@@ -1,4 +1,4 @@
-'use strict'
+"use strict"
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +11,9 @@
 |
 */
 const providers = [
-  '@adonisjs/framework/providers/AppProvider'
+    "@adonisjs/framework/providers/AppProvider",
+    "@adonisjs/framework/providers/ViewProvider",
+    __dirname + "/../App/Providers/ViewProvider",
 ]
 
 /*
@@ -23,8 +25,7 @@ const providers = [
 | Providers for migrations, tests etc.
 |
 */
-const aceProviders = [
-]
+const aceProviders = []
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ const aliases = {}
 |
 */
 const commands = [
-    "App/Commands/SendReminder"
+    "App/Commands/SendReminder",
 ]
 
 module.exports = { providers, aceProviders, aliases, commands }
