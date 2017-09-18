@@ -1,3 +1,4 @@
-node_modules
-tmp
-.env
+/.vscode
+/node_modules
+/tmp
+/.env

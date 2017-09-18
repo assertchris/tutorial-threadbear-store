@@ -37,35 +37,38 @@ Route.get("/register", ({ view }) => {
     return view.render("user/register")
 })
 
-Route.post("/register", () => {
-    // create new customer profile
-    return "POST /register"
+Route.post("/register", ({ request }) => {
+    // ...create new customer profile
+
+    return JSON.stringify(request.all())
 })
 
-Route.get("/forgot-password", () => {
-    // show forgot password form
-    return "GET /forgot-password"
+Route.get("/forgot-password", ({ view }) => {
+    return view.render("user/forgot-password")
 })
 
-Route.post("/forgot-password", () => {
+Route.post("/forgot-password", ({ request }) => {
     // create new password reset token and send email
-    return "POST /forgot-password"
+
+    return JSON.stringify(request.all())
 })
 
-Route.get("/reset-password/:token", ({ params }) => {
-    // show forgot password form
-    return "GET /reset-password " + params.token
+Route.get("/reset-password/:token", ({ view, params }) => {
+    return view.render("user/reset-password", {
+        token: params.token,
+    })
 })
 
-Route.post("/reset-password/:token", ({ params }) => {
+Route.patch("/reset-password/:token", ({ request, params }) => {
     // create new password reset token and send email
-    return "POST /reset-password " + params.token
+
+    return JSON.stringify(request.all())
 })
 
 Route.get("/:customer", ({ view, params }) =>
     view.render("user/profile", {
         name: params.customer,
-    })
+    }),
 )
 
 Route.put("/:customer", ({ params }) => {
@@ -90,18 +93,17 @@ Route.post("/:customer/products", ({ params }) => {
 
 Route.get("/:customer/:product", ({ params }) => {
     // show customer profile
-    return "GET /:customer/:product "
-        + params.customer + " " + params.product
+    return "GET /:customer/:product " + params.customer + " " + params.product
 })
 
 Route.put("/:customer/:product", ({ params }) => {
     // update customer profile
-    return "PUT /:customer/:product "
-        + params.customer + " " + params.product
+    return "PUT /:customer/:product " + params.customer + " " + params.product
 })
 
 Route.delete("/:customer/:product", ({ params }) => {
     // delete customer profile
-    return "DELETE /:customer/:product "
-        + params.customer + " " + params.product
+    return (
+        "DELETE /:customer/:product " + params.customer + " " + params.product
+    )
 })

@@ -11,6 +11,7 @@
 |
 */
 const providers = [
+    "@adonisjs/bodyparser/providers/BodyParserProvider",
     "@adonisjs/framework/providers/AppProvider",
     "@adonisjs/framework/providers/ViewProvider",
     __dirname + "/../App/Providers/ViewProvider",
@@ -49,8 +50,6 @@ const aliases = {}
 | Here you store ace commands for your package
 |
 */
-const commands = [
-    "App/Commands/SendReminder",
-]
+const commands = ["App/Commands/SendReminder"]
 
 module.exports = { providers, aceProviders, aliases, commands }

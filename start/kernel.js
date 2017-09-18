@@ -1,6 +1,6 @@
-'use strict'
+"use strict"
 
-const Server = use('Server')
+const Server = use("Server")
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +11,7 @@ const Server = use('Server')
 | match.
 |
 */
-const globalMiddleware = []
+const globalMiddleware = ["Adonis/Middleware/BodyParser"]
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +32,6 @@ const globalMiddleware = []
 */
 const namedMiddleware = {}
 
-Server
-  .registerGlobal(globalMiddleware)
-  .registerNamed(namedMiddleware)
-  .use(['Adonis/Middleware/Static'])
+Server.registerGlobal(globalMiddleware)
+    .registerNamed(namedMiddleware)
+    .use(["Adonis/Middleware/Static"])

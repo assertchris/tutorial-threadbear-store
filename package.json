@@ -10,6 +10,8 @@
         "@adonisjs/ignitor": "^1.0.6"
     },
     "devDependencies": {
+        "@adonisjs/bodyparser": "^1.0.6",
+        "cheerio": "^1.0.0-rc.2",
         "mocha": "^3.5.0"
     }
 }
