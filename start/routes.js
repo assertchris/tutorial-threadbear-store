@@ -37,10 +37,10 @@ Route.get("/register", ({ view }) => {
     return view.render("user/register")
 })
 
-Route.post("/register", ({ request }) => {
+Route.post("/register", ({ request, response }) => {
     // ...create new customer profile
 
-    return JSON.stringify(request.all())
+    response.json(request.all())
 })
 
 Route.get("/forgot-password", ({ view }) => {
@@ -65,11 +65,52 @@ Route.patch("/reset-password/:token", ({ request, params }) => {
     return JSON.stringify(request.all())
 })
 
-Route.get("/:customer", ({ view, params }) =>
-    view.render("user/profile", {
-        name: params.customer,
-    }),
-)
+const redirects = {
+    assertchris: "christopher",
+    thetutlage: "harminder",
+}
+
+Route.get("/:customer", ({ response, view, params }) => {
+    // return view.render("user/profile", {
+    //     name: params.customer,
+    // })
+
+    // return JSON.stringify(Object.keys(response))
+
+    const redirect = redirects[params.customer]
+
+    if (redirect) {
+        return response.route("profile", { customer: redirect })
+    }
+
+    response.send(
+        view.render("user/profile", {
+            name: params.customer,
+        }),
+    )
+}).as("profile")
+
+Route.get("/:customer/products", ({ params, response }) => {
+    const products = [{ price: 4.99, title: "Teddy Bear" }]
+
+    return response.for(params, {
+        xml: () => [
+            {
+                product: products.map(product => ({
+                    "@": { price: product.price },
+                    "#": product.title,
+                })),
+            },
+            "products",
+        ],
+        json: () => [
+            {
+                products,
+            },
+        ],
+        default: () => "...render normal view",
+    })
+}).formats(["xml", "json"])
 
 Route.put("/:customer", ({ params }) => {
     // update customer profile
