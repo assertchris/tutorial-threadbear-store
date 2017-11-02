@@ -8,6 +8,8 @@
         "@adonisjs/fold": "^4.0.2",
         "@adonisjs/framework": "^4.0.18",
         "@adonisjs/ignitor": "^1.0.6",
+        "currency-map-country": "^1.0.7",
+        "geoip-lite": "^1.2.1",
         "js2xmlparser": "^3.0.0"
     },
     "devDependencies": {
