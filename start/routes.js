@@ -19,76 +19,88 @@ Route.get("/", ({ view }) => {
     return view.render("page/home")
 })
 
-Route.get("/login", ({ view }) => {
-    return view.render("user/login")
+Route.get("/login", "CustomerController.showLogin")
+Route.post("/login", "CustomerController.doLogin")
+Route.put("/logout", "CustomerController.logout")
+Route.get("/register", "CustomerController.showRegister")
+Route.post("/register", "CustomerController.doRegister")
+Route.get("/forgot-password", "CustomerController.showForgotPassword")
+Route.post("/forgot-password", "CustomerController.doForgotPassword")
+Route.get("/reset-password/:token", "CustomerController.showResetPassword")
+Route.patch("/reset-password/:token", "CustomerController.doResetPassword")
+Route.get("/:customer", "CustomerController.showProfile").as("profile")
+Route.put("/:customer", "CustomerController.updateProfile")
+Route.delete("/:customer", "CustomerController.deleteProfile")
+
+// Route.get("/login", ({ view }) => {
+//     return view.render("customer/login")
+// })
+
+// Route.post("/login", () => {
+//     return "POST /login"
+// })
+
+// Route.put("/logout", () => {
+//     return "PUT /logout"
+// })
+
+// Route.get("/register", ({ view }) => {
+//     return view.render("customer/register")
+// })
+
+// Route.post("/register", ({ request, response }) => {
+//     response.json(request.all())
+// })
+
+// Route.get("/forgot-password", ({ view }) => {
+//     return view.render("customer/forgot-password")
+// })
+
+// Route.post("/forgot-password", ({ request }) => {
+//     return JSON.stringify(request.all())
+// })
+
+// Route.get("/reset-password/:token", ({ view, params }) => {
+//     return view.render("customer/reset-password", {
+//         token: params.token,
+//     })
+// })
+
+// Route.patch("/reset-password/:token", ({ request, params }) => {
+//     return JSON.stringify(request.all())
+// })
+
+// const redirects = {
+//     assertchris: "christopher",
+//     thetutlage: "harminder",
+// }
+
+// Route.get("/:customer", ({ response, view, params }) => {
+//     const redirect = redirects[params.customer]
+
+//     if (redirect) {
+//         return response.route("profile", { customer: redirect })
+//     }
+
+//     response.send(
+//         view.render("customer/profile", {
+//             name: params.customer,
+//         }),
+//     )
+// }).as("profile")
+
+// Route.put("/:customer", ({ params }) => {
+//     return "PUT /:customer " + params.customer
+// })
+
+// Route.delete("/:customer", ({ params }) => {
+//     return "DELETE /:customer " + params.customer
+// })
+
+Route.post("/:customer/products", ({ params }) => {
+    // create a new product
+    return "POST /:customer/products " + params.customer
 })
-
-Route.post("/login", () => {
-    // create new customer session
-    return "POST /login"
-})
-
-Route.put("/logout", () => {
-    // expire current customer session
-    return "PUT /logout"
-})
-
-Route.get("/register", ({ view }) => {
-    return view.render("user/register")
-})
-
-Route.post("/register", ({ request, response }) => {
-    // ...create new customer profile
-
-    response.json(request.all())
-})
-
-Route.get("/forgot-password", ({ view }) => {
-    return view.render("user/forgot-password")
-})
-
-Route.post("/forgot-password", ({ request }) => {
-    // create new password reset token and send email
-
-    return JSON.stringify(request.all())
-})
-
-Route.get("/reset-password/:token", ({ view, params }) => {
-    return view.render("user/reset-password", {
-        token: params.token,
-    })
-})
-
-Route.patch("/reset-password/:token", ({ request, params }) => {
-    // create new password reset token and send email
-
-    return JSON.stringify(request.all())
-})
-
-const redirects = {
-    assertchris: "christopher",
-    thetutlage: "harminder",
-}
-
-Route.get("/:customer", ({ response, view, params }) => {
-    // return view.render("user/profile", {
-    //     name: params.customer,
-    // })
-
-    // return JSON.stringify(Object.keys(response))
-
-    const redirect = redirects[params.customer]
-
-    if (redirect) {
-        return response.route("profile", { customer: redirect })
-    }
-
-    response.send(
-        view.render("user/profile", {
-            name: params.customer,
-        }),
-    )
-}).as("profile")
 
 Route.get("/:customer/products", ({ params, response }) => {
     const products = [{ price: 4.99, title: "Teddy Bear" }]
@@ -111,26 +123,6 @@ Route.get("/:customer/products", ({ params, response }) => {
         default: () => "...render normal view",
     })
 }).formats(["xml", "json"])
-
-Route.put("/:customer", ({ params }) => {
-    // update customer profile
-    return "PUT /:customer " + params.customer
-})
-
-Route.delete("/:customer", ({ params }) => {
-    // delete customer profile
-    return "DELETE /:customer " + params.customer
-})
-
-Route.get("/:customer/products", ({ params }) => {
-    // show customer's products
-    return "GET /:customer/products " + params.customer
-})
-
-Route.post("/:customer/products", ({ params }) => {
-    // create a new product
-    return "POST /:customer/products " + params.customer
-})
 
 Route.get("/:customer/:product", ({ params }) => {
     // show customer profile
