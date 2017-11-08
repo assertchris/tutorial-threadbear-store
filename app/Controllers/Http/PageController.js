@@ -1,6 +1,5 @@
-'use strict'
+"use strict"
 
-class PageController {
-}
+class PageController {}
 
 module.exports = PageController

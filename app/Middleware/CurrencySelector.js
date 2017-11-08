@@ -17,7 +17,7 @@ class CurrencySelector {
             request.country = "Unknown"
             request.currency = "USD"
 
-            currency = getCurrency(country.cur)
+            currency = getCurrency("USD")
         } else {
             request.country = reference.country
 

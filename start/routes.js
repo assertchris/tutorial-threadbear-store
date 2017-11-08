@@ -14,10 +14,32 @@
 */
 
 const Route = use("Route")
+// const Database = use("Database")
 
-Route.get("/", ({ view }) => {
+Route.get("/", async ({ view }) => {
+    // const result = await Database.raw("SELECT CURRENT_TIME as time")
+    // console.log("when you hear the beep, it will be " + result[0].time)
+
     return view.render("page/home")
 })
+
+// Route.get("/add-redirects", async () => {
+//     const created_at = Database.raw("CURRENT_TIME")
+
+//     await Database.insert({
+//         from: "assertchris",
+//         to: "christopher",
+//         created_at,
+//     }).into("redirects")
+
+//     await Database.insert({
+//         from: "thetutlage",
+//         to: "harminder",
+//         created_at,
+//     }).into("redirects")
+
+//     return "done"
+// })
 
 Route.get("/login", "CustomerController.showLogin")
 Route.post("/login", "CustomerController.doLogin")
@@ -31,6 +53,7 @@ Route.patch("/reset-password/:token", "CustomerController.doResetPassword")
 Route.get("/:customer", "CustomerController.showProfile").as("profile")
 Route.put("/:customer", "CustomerController.updateProfile")
 Route.delete("/:customer", "CustomerController.deleteProfile")
+Route.get("/oops", "PageController.oops")
 
 // Route.get("/login", ({ view }) => {
 //     return view.render("customer/login")

@@ -11,6 +11,7 @@
 |
 */
 const providers = [
+    "@adonisjs/lucid/providers/LucidProvider",
     "@adonisjs/bodyparser/providers/BodyParserProvider",
     "@adonisjs/framework/providers/AppProvider",
     "@adonisjs/framework/providers/ViewProvider",
@@ -26,7 +27,7 @@ const providers = [
 | Providers for migrations, tests etc.
 |
 */
-const aceProviders = []
+const aceProviders = ["@adonisjs/lucid/providers/MigrationsProvider"]
 
 /*
 |--------------------------------------------------------------------------
