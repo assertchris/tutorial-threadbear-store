@@ -16,6 +16,8 @@ const providers = [
     "@adonisjs/framework/providers/AppProvider",
     "@adonisjs/framework/providers/ViewProvider",
     __dirname + "/../App/Providers/ViewProvider",
+    "@adonisjs/validator/providers/ValidatorProvider",
+    "@adonisjs/session/providers/SessionProvider",
 ]
 
 /*

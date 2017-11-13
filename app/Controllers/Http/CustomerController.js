@@ -2,24 +2,35 @@
 
 const Controller = use("App/Controllers/Http/Controller")
 const Database = use("Database")
+const { validate } = use("Validator")
 
 const Redirect = use("App/Models/Redirect")
 const Customer = use("App/Models/Customer")
 const Product = use("App/Models/Product")
-
-// const redirects = {
-//     assertchris: "christopher",
-//     thetutlage: "harminder",
-// }
+const ProfileMissingException = use("App/Exceptions/ProfileMissingException")
 
 class CustomerController extends Controller {
     showLogin({ view }) {
         return view.render("customer/login")
     }
 
-    async doLogin({ request, response }) {
-        // create new customer session
-        // return "POST /login"
+    async doLogin({ request, response, session }) {
+        const rules = {
+            email: "required|email|exists:customers,email",
+            password: "required",
+        }
+
+        // const validation = await validate(request.all(), rules)
+
+        // if (validation.fails()) {
+        //     return response.json(validation.messages())
+        // }
+
+        // if (!await this.validate({ request, response, session, rules })) {
+        //     return
+        // }
+
+        await this.validate({ request, response, session, rules })
 
         const email = request.input("email")
         const password = request.input("password")
@@ -41,9 +52,40 @@ class CustomerController extends Controller {
         return view.render("customer/register")
     }
 
-    async doRegister({ request, response }) {
-        // ...create new customer profile
-        // this.showRequestParameters(context)
+    async doRegister({ request, response, session }) {
+        const rules = {
+            first_name: "required",
+            last_name: "required",
+            email: "required|email|unique:customers,email",
+            password: "required",
+            confirm_password: "required|same:password",
+            nickname: "required",
+        }
+
+        const messages = {
+            "first_name.required": "you must provide a first name",
+            "last_name.required": "you must provide a last name",
+            "email.required": "you must provide an email address",
+            "email.unique": "your email address must be unique",
+            "password.required": "you must provide a password",
+            "confirm_password.required": "you must confirm the password",
+            "confirm_password.same": "passwords must match",
+            "nickname.required": "you must provide a nickname",
+        }
+
+        // if (
+        //     !await this.validate({
+        //         request,
+        //         response,
+        //         session,
+        //         rules,
+        //         messages,
+        //     })
+        // ) {
+        //     return
+        // }
+
+        await this.validate(request, rules, messages)
 
         const customer = await Customer.create(
             request.only([
@@ -54,14 +96,6 @@ class CustomerController extends Controller {
                 "nickname",
             ]),
         )
-
-        // const customer = new Customer()
-        // customer.first_name = request.input("first_name")
-        // customer.last_name = request.input("last_name")
-        // customer.email = request.input("email")
-        // customer.password = request.input("password")
-        // customer.nickname = request.input("nickname")
-        // await customer.save()
 
         return "done"
     }
@@ -87,8 +121,6 @@ class CustomerController extends Controller {
     }
 
     async showProfile({ params, response, view }) {
-        // const rows = await Database.select("from", "to").from("redirects")
-
         const rows = await Redirect.all()
 
         const redirects = Array.from(rows).reduce((accumulator, row) => {
@@ -102,26 +134,17 @@ class CustomerController extends Controller {
             return response.route("profile", { customer: redirect })
         }
 
-        // const customer = await Database.select("*")
-        //     .from("customers")
-        //     .where("nickname", params.customer)
-        //     .first()
-
         const customer = await Customer.query()
             .where("nickname", params.customer)
             .first()
 
         if (!customer) {
-            return view.render("oops", {
-                type: "PROFILE_MISSING",
-            })
+            // return view.render("oops", {
+            //     type: "PROFILE_MISSING",
+            // })
+
+            throw new ProfileMissingException()
         }
-
-        // const products = await Database.select("*")
-        //     .from("products")
-        //     .where("customer_id", customer.id)
-
-        // const products = await Product.query().where("customer_id", customer.id)
 
         const products = await customer.products()
 

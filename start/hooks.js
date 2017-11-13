@@ -26,4 +26,44 @@ hooks.after.providersBooted(() => {
 
         return (handlers.default || function() {})()
     })
+
+    const Validator = use("Validator")
+    const Database = use("Database")
+
+    const existsFn = async (data, field, message, args, get) => {
+        const value = get(data, field)
+
+        if (!value) {
+            return
+        }
+
+        const [table, column] = args
+
+        const row = await Database.table(table)
+            .where(column, value)
+            .first()
+
+        if (!row) {
+            throw message
+        }
+    }
+
+    Validator.extend("exists", existsFn)
+
+    const Exception = use("Exception")
+
+    // Exception.handle("HttpException", async (error, { response, session }) => {
+    //     // respond to the 404 error
+    //     return
+    // })
+
+    Exception.handle(
+        "ValidationException",
+        async (error, { response, session }) => {
+            session.withErrors(error.messages).flashAll()
+            await session.commit()
+
+            return response.redirect("back")
+        },
+    )
 })

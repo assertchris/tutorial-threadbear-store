@@ -50,10 +50,10 @@ Route.get("/forgot-password", "CustomerController.showForgotPassword")
 Route.post("/forgot-password", "CustomerController.doForgotPassword")
 Route.get("/reset-password/:token", "CustomerController.showResetPassword")
 Route.patch("/reset-password/:token", "CustomerController.doResetPassword")
+Route.get("/oops", "PageController.oops")
 Route.get("/:customer", "CustomerController.showProfile").as("profile")
 Route.put("/:customer", "CustomerController.updateProfile")
 Route.delete("/:customer", "CustomerController.deleteProfile")
-Route.get("/oops", "PageController.oops")
 
 // Route.get("/login", ({ view }) => {
 //     return view.render("customer/login")
