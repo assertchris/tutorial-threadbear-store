@@ -8,13 +8,10 @@ class Controller {
         response.json(request.all())
     }
 
-    async validate(request, rules, messages) {
+    async validate(request, rules, messages = {}) {
         const validation = await validateAll(request.all(), rules, messages)
 
         if (validation.fails()) {
-            // session.withErrors(validation.messages()).flashAll()
-            // return response.redirect("back")
-
             throw ValidationException.validationFailed(validation.messages())
         }
     }

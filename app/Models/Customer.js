@@ -1,9 +1,11 @@
 "use strict"
 
-const Model = use("Model")
 const Hash = use("Hash")
+const { ValidationException } = use("@adonisjs/validator/src/Exceptions")
 
-class Customer extends Model {
+const BaseModel = use("App/Models/BaseModel")
+
+class Customer extends BaseModel {
     products() {
         return this.hasMany("App/Models/Product")
     }
@@ -20,6 +22,14 @@ class Customer extends Model {
         })
     }
 
+    static get computed() {
+        return ["displayName"]
+    }
+
+    getDisplayName({ first_name, last_name }) {
+        return this.titleCase(first_name + " " + last_name)
+    }
+
     static async authenticate(email, password) {
         const customer = await Customer.findByOrFail("email", email)
         const matches = await Hash.verify(password, customer.password)
@@ -28,7 +38,23 @@ class Customer extends Model {
             return customer
         }
 
-        throw new Error("invalid credentials")
+        throw ValidationException.validationFailed({
+            email: "invalid credentials",
+        })
+    }
+
+    pendingOrders() {
+        return this.hasMany("App/Models/Order", "id", "seller_id").where(
+            "status",
+            "pending",
+        )
+    }
+
+    completeOrders() {
+        return this.hasMany("App/Models/Order", "id", "seller_id").where(
+            "status",
+            "complete",
+        )
     }
 }
 

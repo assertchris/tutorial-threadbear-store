@@ -7,6 +7,7 @@ const { validate } = use("Validator")
 const Redirect = use("App/Models/Redirect")
 const Customer = use("App/Models/Customer")
 const Product = use("App/Models/Product")
+const Order = use("App/Models/Order")
 const ProfileMissingException = use("App/Exceptions/ProfileMissingException")
 
 class CustomerController extends Controller {
@@ -20,32 +21,24 @@ class CustomerController extends Controller {
             password: "required",
         }
 
-        // const validation = await validate(request.all(), rules)
-
-        // if (validation.fails()) {
-        //     return response.json(validation.messages())
-        // }
-
-        // if (!await this.validate({ request, response, session, rules })) {
-        //     return
-        // }
-
-        await this.validate({ request, response, session, rules })
+        await this.validate(request, rules)
 
         const email = request.input("email")
         const password = request.input("password")
 
-        try {
-            const customer = await Customer.authenticate(email, password)
-            return "valid"
-        } catch (e) {
-            return "invalid"
-        }
+        const customer = await Customer.authenticate(email, password)
+
+        session.put("customer", customer.id)
+        await session.commit()
+
+        return response.route("dashboard")
     }
 
-    logout() {
-        // expire current customer session
-        return "PUT /logout"
+    async logout({ session, response }) {
+        session.forget("customer")
+        await session.commit()
+
+        return response.route("login")
     }
 
     showRegister({ view }) {
@@ -72,18 +65,6 @@ class CustomerController extends Controller {
             "confirm_password.same": "passwords must match",
             "nickname.required": "you must provide a nickname",
         }
-
-        // if (
-        //     !await this.validate({
-        //         request,
-        //         response,
-        //         session,
-        //         rules,
-        //         messages,
-        //     })
-        // ) {
-        //     return
-        // }
 
         await this.validate(request, rules, messages)
 
@@ -162,6 +143,37 @@ class CustomerController extends Controller {
     deleteProfile({ params }) {
         // delete customer profile
         return "DELETE /:customer " + params.customer
+    }
+
+    async dashboard({ request, response, session, view }) {
+        const customerId = session.get("customer")
+
+        if (!customerId) {
+            return response.route("login")
+        }
+
+        const customer = await Customer.find(customerId)
+
+        const products = await customer.products().fetch()
+
+        const pendingOrders = await customer
+            .pendingOrders()
+            .with("buyer")
+            .with("items.product")
+            .fetch()
+
+        const completeOrders = await customer
+            .completeOrders()
+            .with("buyer")
+            .with("items.product")
+            .fetch()
+
+        return view.render("customer/dashboard", {
+            customer: customer.toJSON(),
+            products: products.toJSON(),
+            pendingOrders: pendingOrders.toJSON(),
+            completeOrders: completeOrders.toJSON(),
+        })
     }
 }
 

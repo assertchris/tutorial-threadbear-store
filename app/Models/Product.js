@@ -1,8 +1,15 @@
-'use strict'
+"use strict"
 
-const Model = use('Model')
+const BaseModel = use("App/Models/BaseModel")
 
-class Product extends Model {
+class Product extends BaseModel {
+    static get computed() {
+        return ["displayName"]
+    }
+
+    getDisplayName({ name }) {
+        return this.titleCase(name)
+    }
 }
 
 module.exports = Product

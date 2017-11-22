@@ -1,8 +1,7 @@
-'use strict'
+"use strict"
 
-const Model = use('Model')
+const BaseModel = use("App/Models/BaseModel")
 
-class Redirect extends Model {
-}
+class Redirect extends BaseModel {}
 
 module.exports = Redirect
