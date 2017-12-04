@@ -146,13 +146,15 @@ class CustomerController extends Controller {
     }
 
     async dashboard({ request, response, session, view }) {
-        const customerId = session.get("customer")
+        // const customerId = session.get("customer")
 
-        if (!customerId) {
-            return response.route("login")
-        }
+        // if (!customerId) {
+        //     return response.route("login")
+        // }
 
-        const customer = await Customer.find(customerId)
+        // const customer = await Customer.find(customerId)
+
+        const customer = request.customer
 
         const products = await customer.products().fetch()
 

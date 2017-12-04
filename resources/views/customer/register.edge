@@ -6,6 +6,7 @@
 
 @section("content")
     <form method="post">
+        {{ csrfField() }}
         <div class="form-group">
             <label for="email">First name</label>
             <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old("first_name", "") }}">
