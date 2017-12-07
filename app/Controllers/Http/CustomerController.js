@@ -101,15 +101,8 @@ class CustomerController extends Controller {
         this.showRequestParameters(context)
     }
 
-    async showProfile({ params, response, view }) {
-        const rows = await Redirect.all()
-
-        const redirects = Array.from(rows).reduce((accumulator, row) => {
-            accumulator[row.from] = row.to
-            return accumulator
-        }, {})
-
-        const redirect = redirects[params.customer]
+    async showProfile({ params, session, response, view }) {
+        const redirect = await this.redirectForCustomer(params.customer)
 
         if (redirect) {
             return response.route("profile", { customer: redirect })
@@ -120,19 +113,28 @@ class CustomerController extends Controller {
             .first()
 
         if (!customer) {
-            // return view.render("oops", {
-            //     type: "PROFILE_MISSING",
-            // })
-
             throw new ProfileMissingException()
         }
 
-        const products = await customer.products()
+        const products = await customer.products().fetch()
 
         return view.render("customer/profile", {
-            customer,
-            products,
+            customer: customer.toJSON(),
+            products: products.toJSON(),
+            session: session.get("customer"),
         })
+    }
+
+    async redirectForCustomer(customer) {
+        const row = await Redirect.query()
+            .where("from", customer)
+            .first()
+
+        if (row) {
+            return row.to
+        }
+
+        return false
     }
 
     updateProfile({ params }) {
@@ -146,14 +148,6 @@ class CustomerController extends Controller {
     }
 
     async dashboard({ request, response, session, view }) {
-        // const customerId = session.get("customer")
-
-        // if (!customerId) {
-        //     return response.route("login")
-        // }
-
-        // const customer = await Customer.find(customerId)
-
         const customer = request.customer
 
         const products = await customer.products().fetch()

@@ -1,4 +1,62 @@
-const { hooks } = require("@adonisjs/ignitor")
+"use strict"
+
+const { hooks } = use("@adonisjs/ignitor")
+
+hooks.after.httpServer(() => {
+    const server = use("Server")
+
+    const instance = server.getInstance()
+    const socket = use("socket.io")(instance)
+
+    socket.on("connection", connection => {
+        console.log("browser connected", connection.id)
+
+        connection.on("disconnect", () => {
+            console.log("browser disconnected")
+        })
+
+        connection.on("browser message", message => {
+            console.log("browser message:", message)
+        })
+
+        connection.on("buy", message => {
+            connection.emit("bought", message)
+        })
+
+        connection.on("check out", async message => {
+            const { seller, buyer, items } = JSON.parse(message)
+
+            const Database = use("Database")
+            const moment = use("moment")
+
+            const timestamps = {
+                created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+                updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+            }
+
+            const orderId = await Database.table("orders").insert({
+                buyer_id: seller,
+                seller_id: buyer,
+                status: "pending",
+                ...timestamps,
+            })
+
+            await Database.from("order_items").insert(
+                items.map(item => ({
+                    order_id: orderId[0],
+                    product_id: item.id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    ...timestamps,
+                })),
+            )
+        })
+
+        connection.emit("server message", "hello browser")
+    })
+
+    console.log("set up socket.io")
+})
 
 hooks.after.providersBooted(() => {
     const parser = use("js2xmlparser")
