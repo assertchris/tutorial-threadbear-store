@@ -4,10 +4,13 @@
         "test": "mocha",
         "build": "$npm_package_config_webpack",
         "build:watch": "$npm_package_config_webpack -w",
-        "build:production": "$npm_package_config_webpack -p"
+        "build:production": "$npm_package_config_webpack -p",
+        "serve": "adonis serve --dev",
+        "serve:production": "adonis serve"
     },
     "config": {
-        "webpack": "webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "webpack":
+            "webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "dependencies": {
         "@adonisjs/ace": "^4.0.4",
@@ -26,6 +29,7 @@
     },
     "devDependencies": {
         "@adonisjs/bodyparser": "^1.0.6",
+        "@adonisjs/cli": "^3.0.17",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
         "babel-plugin-transform-class-properties": "^6.24.1",
         "babel-preset-env": "^1.6.1",

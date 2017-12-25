@@ -15,7 +15,7 @@ const providers = [
     "@adonisjs/bodyparser/providers/BodyParserProvider",
     "@adonisjs/framework/providers/AppProvider",
     "@adonisjs/framework/providers/ViewProvider",
-    __dirname + "/../App/Providers/ViewProvider",
+    __dirname + "/../app/Providers/ViewProvider",
     "@adonisjs/validator/providers/ValidatorProvider",
     "@adonisjs/session/providers/SessionProvider",
     "@adonisjs/shield/providers/ShieldProvider",
