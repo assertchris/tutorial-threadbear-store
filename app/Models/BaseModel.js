@@ -7,6 +7,12 @@ class BaseModel extends Model {
     titleCase(...params) {
         return startCase(...params)
     }
+
+    static _bootIfNotBooted() {
+        if (this.name !== "BaseModel") {
+            super._bootIfNotBooted()
+        }
+    }
 }
 
 module.exports = BaseModel

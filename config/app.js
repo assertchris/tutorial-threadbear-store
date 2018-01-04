@@ -66,6 +66,19 @@ module.exports = {
         |
         */
         jsonpCallback: "callback",
+
+        /*
+        |--------------------------------------------------------------------------
+        | Etag
+        |--------------------------------------------------------------------------
+        |
+        | Set etag on all HTTP response. In order to disable for selected routes,
+        | you can call the `response.send` with an options object as follows.
+        |
+        | response.send('Hello', { ignoreEtag: true })
+        |
+        */
+        etag: true,
     },
 
     views: {
@@ -123,16 +136,16 @@ module.exports = {
     locales: {
         /*
         |--------------------------------------------------------------------------
-        | Driver
+        | Loader
         |--------------------------------------------------------------------------
         |
-        | The driver to be used for fetching and updating locales. Below is the
+        | The loader to be used for fetching and updating locales. Below is the
         | list of available options.
         |
         | file, database
         |
         */
-        driver: "file",
+        loader: "file",
 
         /*
         |--------------------------------------------------------------------------
@@ -145,15 +158,53 @@ module.exports = {
         |
         */
         locale: "en",
+    },
+
+    logger: {
+        /*
+        |--------------------------------------------------------------------------
+        | Transport
+        |--------------------------------------------------------------------------
+        |
+        | Transport to be used for logging messages. You can have multiple
+        | transports using same driver.
+        |
+        | Available drivers are: `file` and `console`.
+        |
+        */
+        transport: "console",
 
         /*
         |--------------------------------------------------------------------------
-        | Fallback Locale
+        | Console Transport
         |--------------------------------------------------------------------------
         |
-        | Fallback locale to be used when actual locale is not supported.
+        | Using `console` driver for logging. This driver writes to `stdout`
+        | and `stderr`
         |
         */
-        fallbackLocale: "en",
+        console: {
+            driver: "console",
+            name: "adonis-app",
+            level: "info",
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | File Transport
+        |--------------------------------------------------------------------------
+        |
+        | File transport uses file driver and writes log messages for a given
+        | file inside `tmp` directory for your app.
+        |
+        | For a different directory, set an absolute path for the filename.
+        |
+        */
+        file: {
+            driver: "file",
+            name: "adonis-app",
+            filename: "adonis.log",
+            level: "info",
+        },
     },
 }

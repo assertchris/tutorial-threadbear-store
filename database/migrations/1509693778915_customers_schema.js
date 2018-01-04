@@ -11,6 +11,7 @@ class CustomersSchema extends Schema {
             table.string("email").unique()
             table.string("password")
             table.string("nickname").unique()
+            table.string("token").unique()
             table.timestamps()
         })
     }

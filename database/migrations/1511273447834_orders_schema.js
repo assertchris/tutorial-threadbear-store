@@ -9,6 +9,7 @@ class OrdersSchema extends Schema {
             table.integer("buyer_id")
             table.integer("seller_id")
             table.string("status")
+            table.string("token")
             table.timestamps()
         })
     }

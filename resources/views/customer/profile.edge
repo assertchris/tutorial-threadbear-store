@@ -31,7 +31,7 @@
         </p>
     @endeach
     @if(session)
-        <div class="cart" data-seller={{ customer.id }} data-buyer={{ session }}>
+        <div class="cart" data-seller={{ customer.id }} data-buyer={{ session }} data-key={{ key }}>
             Shopping cart goes here
         </div>
     @else

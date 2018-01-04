@@ -3,6 +3,9 @@
 const Controller = use("App/Controllers/Http/Controller")
 const Database = use("Database")
 const { validate } = use("Validator")
+const Mail = use("Mail")
+const Hash = use("Hash")
+const Env = use("Env")
 
 const Redirect = use("App/Models/Redirect")
 const Customer = use("App/Models/Customer")
@@ -85,9 +88,44 @@ class CustomerController extends Controller {
         return view.render("customer/forgot-password")
     }
 
-    doForgotPassword(context) {
+    async doForgotPassword({ request, response }) {
         // create new password reset token and send email
-        this.showRequestParameters(context)
+        // this.showRequestParameters(context)
+
+        const email = request.input("email")
+
+        const customer = await Customer.query()
+            .where("email", email)
+            .first()
+
+        if (!customer) {
+            // displaying an error shows that this account exists
+            // we should respond as we otherwise would
+
+            const delay = Math.random() * 3000 + 1000
+            await new Promise(resolve => setTimeout(resolve, delay))
+
+            response.redirect("/")
+        }
+
+        const token = await Hash.make(customer.email + new Date())
+
+        customer.token = token
+        await customer.save()
+
+        const data = {
+            ...customer.toJSON(),
+            token,
+        }
+
+        await Mail.send("email.customer.forgot-password", data, message => {
+            message
+                .to(customer.email)
+                .from("your email address")
+                .subject("Password Reset")
+        })
+
+        response.redirect("/")
     }
 
     showResetPassword({ view, params }) {
@@ -96,9 +134,28 @@ class CustomerController extends Controller {
         })
     }
 
-    doResetPassword(context) {
+    async doResetPassword({ params, request, response }) {
         // create new password reset token and send email
-        this.showRequestParameters(context)
+        // this.showRequestParameters(context)
+
+        const token = decodeURIComponent(params.token)
+
+        const customer = await Customer.query()
+            .where("token", token)
+            .first()
+
+        if (!customer) {
+            // display an error
+            throw new ProfileMissingException()
+        }
+
+        const password = request.input("password")
+
+        customer.token = ""
+        customer.password = password
+        await customer.save()
+
+        response.redirect("/")
     }
 
     async showProfile({ params, session, response, view }) {
@@ -122,6 +179,7 @@ class CustomerController extends Controller {
             customer: customer.toJSON(),
             products: products.toJSON(),
             session: session.get("customer"),
+            key: Env.get("STRIPE_KEY"),
         })
     }
 

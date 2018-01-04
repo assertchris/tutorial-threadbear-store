@@ -7,6 +7,7 @@ const globalMiddleware = [
     "App/Middleware/CurrencySelector",
     "Adonis/Middleware/Session",
     "Adonis/Middleware/Shield",
+    "Adonis/Middleware/Cors",
 ]
 
 const namedMiddleware = {

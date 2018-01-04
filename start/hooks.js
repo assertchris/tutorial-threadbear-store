@@ -24,7 +24,7 @@ hooks.after.httpServer(() => {
         })
 
         connection.on("check out", async message => {
-            const { seller, buyer, items } = JSON.parse(message)
+            const { seller, buyer, token, items } = JSON.parse(message)
 
             const Database = use("Database")
             const moment = use("moment")
@@ -38,6 +38,7 @@ hooks.after.httpServer(() => {
                 buyer_id: seller,
                 seller_id: buyer,
                 status: "pending",
+                token,
                 ...timestamps,
             })
 
@@ -49,6 +50,28 @@ hooks.after.httpServer(() => {
                     price: item.price,
                     ...timestamps,
                 })),
+            )
+
+            // for immediate payments...
+
+            const Env = use("Env")
+            const Stripe = use("stripe")
+            const client = Stripe(Env.get("STRIPE_SECRET"))
+
+            const total = items.reduce((acc, item) => {
+                return acc + item.price * item.quantity
+            }, 0)
+
+            client.charges.create(
+                {
+                    amount: total,
+                    currency: "usd",
+                    description: "Threadbear purchase",
+                    source: token,
+                },
+                (error, charge) => {
+                    // ...use this to check if the charge was successful
+                },
             )
         })
 

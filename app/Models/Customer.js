@@ -17,7 +17,7 @@ class Customer extends BaseModel {
     static boot() {
         super.boot()
 
-        this.addHook("beforeCreate", async customer => {
+        this.addHook("beforeSave", async customer => {
             customer.password = await Hash.make(customer.password)
         })
     }

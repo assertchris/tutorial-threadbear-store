@@ -1,4 +1,4 @@
-import "regenerator-runtime/runtime-module"
+import "babel-polyfill"
 
 // const load = async () => {
 //     const response = await fetch("https://threadbear.store")
@@ -35,7 +35,17 @@ class Cart extends Component {
     }
 
     componentDidMount() {
+        const { stripeKey } = this.props
+
         this.props.socket.on("bought", this.onBought)
+
+        this.stripe = Stripe(stripeKey)
+        this.elements = this.stripe.elements()
+
+        const card = this.elements.create("card")
+        card.mount("#card-element")
+
+        this.card = card
     }
 
     onBought = data => {
@@ -60,11 +70,19 @@ class Cart extends Component {
         })
     }
 
-    onCheckout = () => {
-        const { buyer, seller, socket } = this.props
+    onCheckout = async () => {
+        const { buyer, seller, stripeKey, socket } = this.props
         const items = Object.values(this.state.items)
 
-        socket.emit("check out", JSON.stringify({ buyer, seller, items }))
+        const result = await this.stripe.createToken(this.card)
+        const token = result.token.id
+
+        console.log("check out event", buyer, seller, token)
+
+        socket.emit(
+            "check out",
+            JSON.stringify({ buyer, seller, token, items }),
+        )
 
         this.setState({ items: {} })
     }
@@ -75,6 +93,7 @@ class Cart extends Component {
         return (
             <div className="items">
                 {items.map(this.renderItem)}
+                <div id="card-element" />
                 <CartTotal items={items} onCheckout={this.onCheckout} />
             </div>
         )
@@ -163,9 +182,10 @@ const socket = io()
 const cartContainer = document.querySelector(".cart")
 
 if (cartContainer) {
-    const { buyer, seller } = cartContainer.dataset
+    const { buyer, seller, key } = cartContainer.dataset
+
     render(
-        <Cart buyer={buyer} seller={seller} socket={socket} />,
+        <Cart buyer={buyer} seller={seller} stripeKey={key} socket={socket} />,
         cartContainer,
     )
 }
@@ -179,4 +199,40 @@ for (let buyNowContainer of buyNowContainers) {
         <BuyNow id={id} name={name} price={price} socket={socket} />,
         buyNowContainer,
     )
+}
+
+const forms = document.querySelectorAll(".ajax-form")
+
+for (let form of forms) {
+    const method = form.getAttribute("method").toUpperCase()
+    const action = form.getAttribute("action")
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault()
+
+        const data = []
+        const inputs = form.querySelectorAll("input")
+
+        for (let input of inputs) {
+            data.push(input.name + "=" + encodeURIComponent(input.value))
+        }
+
+        const response = await fetch(action, {
+            mode: "cors",
+            credentials: "include",
+            redirect: "follow",
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded; charset=UTF-8",
+            },
+            method,
+            body: data.join("&"),
+        })
+
+        alert("saved!")
+
+        // we should do another ajax request to reload the products list
+        // for now, we'll just refresh the whole page...
+        location.reload()
+    })
 }
